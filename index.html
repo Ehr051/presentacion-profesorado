@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyecto de Cátedra – Conducción Nivel Sección (Caballería)</title>
+  <!-- D3 v7 desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <style>
+    :root{
+      --bg:#f7fafd; --panel:#ffffff; --ink:#222b45; --muted:#7a8ca5;
+      --brand:#ffd34d; --accent:#4da3ff; --ok:#54d17a; --danger:#ff6b6b;
+      --link:#2f405a; --node:#e3eaf7; --nodeHover:#d0e2ff; --edge:#b3c2db;
+      --shadow:0 4px 24px rgba(77,163,255,0.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--ink); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Segoe UI Emoji";
+      display:flex; flex-direction:column; min-height:100%;
+    }
+    header{
+      display:flex; align-items:center; gap:12px; padding:14px 18px; border-bottom:1px solid #202938; background:linear-gradient(180deg, rgba(255,211,77,0.07), rgba(0,0,0,0));
+    }
+    header h1{font-size:18px; margin:0; color:var(--brand); letter-spacing:.3px}
+    header .sub{color:var(--muted); font-size:13px}
+    .toolbar{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-left:auto;
+    }
+    .btn{
+      background:var(--panel); color:var(--ink); border:1px solid #223045; border-radius:10px; padding:8px 10px; font-size:13px; cursor:pointer;
+      transition:all .2s ease; box-shadow:0 0 0 rgba(0,0,0,0);
+    }
+    .btn:hover{background:#1b2330}
+    .btn.primary{border-color:#3d4f6d; background:#192230}
+    .btn.danger{border-color:#52313a; color:#ffd0d0}
+    .btn:active{transform:translateY(1px)}
+    .btn[disabled]{opacity:.5; cursor:not-allowed}
+    
+    /* Modo Presentación */
+    .presentation-btn { background: #ff6b6b; color: white; }
+    .presentation-btn:hover { background: #ff5252; }
+    
+    .auto-tour-btn { background: #54d17a; color: white; }
+    .auto-tour-btn:hover { background: #4caf50; }
+    
+    .presentation-mode {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .presentation-content {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 60px;
+      max-width: 80%;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      position: relative;
+    }
+    
+    .presentation-title {
+      font-size: 3em;
+      color: #2c5aa0;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+    
+    .presentation-content h2 {
+      color: #333;
+      font-size: 2em;
+      margin: 30px 0 15px 0;
+    }
+    
+    .presentation-content p {
+      font-size: 1.3em;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    
+    .presentation-nav {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+    }
+    
+    .presentation-nav button {
+      margin: 0 10px;
+      padding: 15px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #4da3ff;
+      color: white;
+    }
+    
+    .close-presentation {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .layout{display:grid; grid-template-columns: 320px 1fr; gap:0; min-height:0; flex:1}
+    aside{
+  background:var(--panel); border-right:1px solid #e3eaf7; padding:32px 28px; overflow:auto;
+  box-shadow:var(--shadow);
+  min-width:320px;
+    }
+    aside h2{font-size:13px; color:var(--muted); margin:8px 0}
+    .search{display:flex; gap:8px; margin-bottom:8px}
+    .search input{
+      width:100%; background:#0f131a; color:var(--ink); border:1px solid #24334b; outline:none; border-radius:10px; padding:10px 12px; font-size:13px;
+    }
+    .breadcrumbs{font-size:12px; color:var(--muted); line-height:1.4; padding:8px 0}
+    .breadcrumbs span{color:var(--ink)}
+    .legend{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 10px}
+    .tag{font-size:11px; color:#c7d7ea; background:#0f131a; border:1px solid #223045; padding:5px 8px; border-radius:999px}
+    .mini{border:1px dashed #2a3952; border-radius:12px; padding:10px; margin-top:6px; font-size:12px; color:#c7d7ea}
+    .mini p{margin:6px 0}
+
+    main{position:relative; overflow:hidden}
+    #chart{position:absolute; inset:0}
+    .hint{position:absolute; right:12px; bottom:12px; font-size:12px; color:var(--muted); background:#0f131a; border:1px solid #24334b; padding:8px 10px; border-radius:8px}
+
+    /* Node styles */
+    .node rect{
+  stroke:var(--edge); stroke-width:2px; rx:18; ry:18; filter: drop-shadow(0 4px 16px rgba(77,163,255,0.10));
+  /* El color de fondo se asigna dinámicamente por JS */
+    }
+    .node:hover rect{fill:var(--nodeHover); stroke:var(--accent)}
+    .node text{font-size:16px; fill:var(--ink); font-weight:600}
+    .node .small{fill:var(--muted); font-size:13px; font-weight:400}
+    .node .pill{
+      fill:var(--accent); stroke:var(--accent); stroke-width:1px; rx:12; ry:12;
+    }
+    .node .pillText{font-size:13px; fill:#fff; font-weight:700}
+
+    .link{fill:none; stroke:var(--edge); stroke-width:1.2px}
+
+    /* Collapse chevron */
+    .chev{cursor:pointer}
+    .chev text{font-size:14px; fill:#9fb0c3}
+
+    /* Info panel */
+    .info{background:#0f131a; border:1px solid #24334b; padding:12px; border-radius:12px; margin-top:8px}
+  .info{background:#e3eaf7; border:1px solid #b3c2db; padding:24px; border-radius:20px; margin-top:18px; box-shadow:var(--shadow)}
+  .info h3{margin:0 0 14px 0; font-size:18px; color:var(--accent); font-weight:700}
+  .info p{margin:10px 0; font-size:15px; color:var(--ink)}
+  .info ul{margin:14px 0 0 28px; padding:0}
+  .info li{margin:8px 0; color:var(--muted); font-size:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Proyecto de Cátedra – Conducción Nivel Sección</h1>
+    <div class="sub">Caballería · Presentación interactiva (tipo cuadro sinóptico)</div>
+    <div class="toolbar">
+      <button id="btnExpand" class="btn primary" title="Expandir todo">Expandir</button>
+      <button id="btnCollapse" class="btn" title="Colapsar todo">Colapsar</button>
+      <button id="btnHome" class="btn" title="Vista general">Vista general</button>
+              <button id="btnFocusUD3" class="btn" title="Enfocar UD 3">🎯 UD 3</button>
+
+        <button id="btnAutoTour" class="btn auto-tour-btn" title="Tour Curricular Completo">� Tour Curricular</button>
+      </div>
+      <button id="btnExportPNG" class="btn" title="Exportar PNG">Exportar PNG</button>
+      <button id="btnHelp" class="btn" title="Ayuda">Ayuda</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside>
+      <div class="search">
+        <input id="q" placeholder="Buscar (p. ej., 'exploración', 'evaluación', 'MAG 7,62')" />
+        <button id="btnSearch" class="btn">Buscar</button>
+      </div>
+      <div class="breadcrumbs" id="breadcrumbs">Ruta: <span>Inicio</span></div>
+      <div class="legend">
+        <div class="tag">Click: expandir/colapsar</div>
+        <div class="tag">Ctrl + scroll: zoom</div>
+        <div class="tag">Arrastrar: pan</div>
+      </div>
+      <div class="mini">
+        <p><strong>Vista sinóptica:</strong> el diagrama arranca colapsado por niveles. Hacé zoom para detallar.</p>
+        <p>Botón <em>Foco: UD 3</em> te centra en la Unidad Didáctica 3 con animación.</p>
+      </div>
+      <div class="info" id="info">
+        <h3>Seleccione un nodo</h3>
+        <p>Al hacer click en un nodo, verás aquí un resumen didáctico y puntos clave para la exposición.</p>
+      </div>
+    </aside>
+    <main>
+      <svg id="chart"></svg>
+      <div id="minimap" style="position:absolute; right:24px; bottom:80px; width:160px; height:160px; background:#e3eaf7; border:2px solid #4da3ff; border-radius:16px; box-shadow:0 4px 24px rgba(77,163,255,0.18); z-index:10; overflow:hidden;"></div>
+      <div class="nav-arrows" style="position:absolute; right:24px; bottom:250px; display:flex; gap:10px;">
+        <button id="btnBack" class="btn" title="Volver al nivel anterior">⬅ Volver</button>
+        <button id="btnHomeNav" class="btn" title="Ir al inicio">🏠 Inicio</button>
+      </div>
+      <div class="hint">Consejo: empezá con "Vista general" y luego hacé foco en UD 3 → métodos y evaluación.</div>
+    </main>
+  </div>
+
+  <!-- Modo Presentación -->
+  <div id="presentationMode" class="presentation-mode">
+    <div class="presentation-content">
+      <button class="close-presentation" onclick="closePresentationMode()">×</button>
+      <div id="presentationSlide">
+        <!-- El contenido de las diapositivas se carga dinámicamente -->
+      </div>
+      <div class="presentation-nav">
+        <button onclick="previousSlide()">⬅ Anterior</button>
+        <button onclick="nextSlide()">Siguiente ➡</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==============================
+    // 1) Datos jerárquicos del proyecto (resumen completo + foco UD3)
+    // ==============================
+    const data = {
+      name: "Proyecto de Cátedra – Conducción Nivel Sección (Caballería)",
+      note: "Presentación interactiva para Práctica Supervisada y dictado de la UD 3.",
+      children: [
+        {
+          name: "Información Institucional",
+          brief: "Carrera, código, carga horaria, resolución ministerial.",
+          children: [
+            { name: "Institución", note: "Ejército Argentino - Colegio Militar de la Nación" },
+            { name: "Carrera", note: "Licenciatura en Conducción y Gestión Operativa" },
+            { name: "Resolución", note: "RESOL-2019-14-APN-MECCYT" },
+            { name: "Curso", note: "IVto Año – Caballería. Código: 0-4-55-17" },
+            { name: "Carga horaria semanal", note: "5 Hs (60') / 6 Hs (45')" },
+            { name: "Carga horaria total", note: "108 Hs (60') / 144 Hs (45')" },
+            { name: "Duración", note: "Anual" },
+            { name: "Carácter", note: "Obligatoria" },
+            { name: "Plantel docente", note: "Coordinador y Profesores: Ver Plantel Docente" }
+          ]
+        },
+        {
+          name: "Perfil por Competencias",
+          brief: "Ética, mando, técnica, pensamiento crítico, resolución de problemas, comunicación.",
+          children: [
+            { name: "Ética y legalidad", note: "Actuar según principios éticos y Constitución." },
+            { name: "Mando y disciplina", note: "Subordinación, disciplina, liderazgo." },
+            { name: "Aplicación técnica", note: "Terminología, técnicas y procedimientos operacionales." },
+            { name: "Pensamiento crítico", note: "Reflexivo, analítico e independiente." },
+            { name: "Resolución de problemas", note: "Anticipar y resolver problemas complejos." },
+            { name: "Marco jurídico y cultural", note: "Normas, historia y cultura institucional." },
+            { name: "Trabajo en equipo", note: "Coordinación por objetivos." },
+            { name: "Aprendizaje continuo", note: "Actualización científica y tecnológica." },
+            { name: "Función pública", note: "Rol del funcionario militar." },
+            { name: "Comunicación", note: "Comunicación eficaz vertical y horizontal." },
+            { name: "Planeamiento táctico", note: "Fundamentos y aplicación por nivel." },
+            { name: "Tiro", note: "Fundamentos y seguridad de tiro." },
+            { name: "Servicios", note: "Normas de seguridad y guarnición." },
+            { name: "Pedagogía", note: "Principios pedagógicos como instructor." },
+            { name: "Conducción táctica", note: "Ejecución de operaciones en diferentes armas." }
+          ]
+        },
+        {
+          name: "Marco Referencial",
+          brief: "Contenidos mínimos, misión, empleo, conducción, normas de servicio.",
+          children: [
+            { name: "Contenidos mínimos", children:[
+              { name:"Misión", note:"Organización, capacidades y limitaciones de la sección."},
+              { name:"Empleo táctico", note:"Planeamiento y ejecución de operaciones tácticas."},
+              { name:"Conducción", note:"Aplicación en ambientes y situaciones particulares."},
+              { name:"Normas de servicio", note:"Oficial de servicio, jefe de guardia, seguridad y guarnición."}
+            ]},
+            { name: "Prerrequisitos", note: "Conducción Nivel Grupo (III Año)." }
+          ]
+        },
+        {
+          name: "Articulación",
+          brief: "Vinculación con Táctica Particular, Práctica Profesional, Didáctica, Tecnología, EF y Oratoria.",
+          children: [
+            { name: "Táctica Particular", children:[
+              { name: "Conceptos del Arma de Caballería" },
+              { name: "Empleo en operaciones tácticas" },
+              { name: "Logística en unidad táctica" },
+              { name: "Movimientos en el campo táctico" },
+              { name: "Ambientes y operaciones particulares" },
+              { name: "Tecnología en combate moderno" }
+            ]},
+            { name: "Práctica Profesional", children:[
+              { name: "Proceder del Jefe de Tropas" },
+              { name: "Conducción de secciones" },
+              { name: "Secciones semi-independientes" },
+              { name: "Armas, materiales y vehículos del Arma" }
+            ]},
+            { name: "Didáctica Especial Militar", children:[
+              { name: "Planeamiento de operaciones tácticas" },
+              { name: "Instructor y Director de ejercicios" }
+            ]},
+            { name: "Tecnología Específica", children:[
+              { name: "Principios físicos del material" },
+              { name: "Materiales del Arma" },
+              { name: "Tendencias" }
+            ]},
+            { name: "Educación Física", children:[
+              { name: "Rol del instructor" },
+              { name: "Seguridad en educación física" },
+              { name: "Didáctica especial" }
+            ]},
+            { name: "Oratoria II", children:[
+              { name: "Retórica y oratoria" },
+              { name: "Comprensión lectora" },
+              { name: "Redacción de textos" }
+            ]}
+          ]
+        },
+        {
+          name: "Encuadre Metodológico",
+          brief: "Propósitos formativos y metodología de enseñanza-aprendizaje.",
+          children: [
+            { name: "Propósitos", children:[
+              { name: "Formar al cadete como Jefe de Sección" },
+              { name: "Desarrollar pensamiento reflexivo" },
+              { name: "Aprendizaje significativo guiado por Instructor" }
+            ]},
+            { name: "Metodología", children:[
+              { name: "Técnicas grupales y trabajo en equipo" },
+              { name: "Guías de estudio" },
+              { name: "Cartografía y situaciones tácticas" },
+              { name: "Teoría + práctica en campo de instrucción" }
+            ]}
+          ]
+        },
+        {
+          name: "Modalidad y Evaluación",
+          brief: "Criterios de evaluación formativa y de desempeño.",
+          children: [
+            { name: "Criterios", children:[
+              { name: "Evaluación como diálogo pedagógico" },
+              { name: "Valoración precisa de resultados" },
+              { name: "Competencias profesionales como cierre formativo" }
+            ]}
+          ]
+        },
+        {
+          name: "Unidades Didácticas",
+          brief: "UD1 Morteros · UD2 Tanques · UD3 Exploración · UD4 Armas combinadas · UD5 Teoría General",
+          children: [
+            {
+              name: "UD 1: Conducción de Sección Morteros",
+              brief: "Fuegos de apoyo. 81/120 mm y VCTM.",
+              children:[
+                { name:"Enfoque", note:"Planeamiento y ejecución de fuegos de apoyo" },
+                { name:"Equipos", note:"Mortero 81mm, 120mm, VCTM" },
+                { name:"Actividades", children:[
+                  { name:"Estudio dirigido" }, { name:"Práctica gobernada" }, { name:"Ejercicios tácticos" }
+                ]}
+              ]
+            },
+            {
+              name: "UD 2: Conducción de Sección Tanques",
+              brief: "VC TAM, SK-105. Teoría de tiro y OO.",
+              children:[
+                { name:"Enfoque", note:"Operaciones de combate con VC TAM y SK 105" },
+                { name:"Contenidos", note:"Orden de operaciones, teoría de tiro de tanques" },
+                { name:"Actividades", children:[
+                  { name:"Ejercicios aplicativos" }, { name:"Solución de problemas tácticos" }
+                ]}
+              ]
+            },
+            {
+              name: "UD 3: Conducción de Sección Exploración",
+              brief: "Planeamiento y ejecución de exploración. Métodos y evaluación (foco).",
+              children:[
+                { name:"Objetivos de aprendizaje", children:[
+                  { name:"Planear y ejecutar operaciones complementarias" },
+                  { name:"Conducir exploración en vehículo, aeronave o ganado" },
+                  { name:"Aplicar teoría y seguridad de tiro con armas portátiles y VVCC" }
+                ]},
+                { name:"Estándares", children:[
+                  { name:"Aplica principios y procedimientos de exploración" },
+                  { name:"Planeamiento lógico con PJT" },
+                  { name:"Confecciona e imparte Orden de Operaciones" },
+                  { name:"Se desempeña como Director de Tiro (armas portátiles)" }
+                ]},
+                { name:"Contenidos", children:[
+                  { name:"Conceptos", note:"Principios, misión, capacidades y organización de la sección" },
+                  { name:"Táctica", note:"Operaciones ofensivas, defensivas y complementarias" },
+                  { name:"Procedimientos", children:[
+                    { name:"Movimientos (a pie y en vehículo)" },
+                    { name:"Exploración desmontada y montada" },
+                    { name:"Reconocimientos" },
+                    { name:"Sostén logístico" },
+                    { name:"Exploración en localidades, montaña y con ganado" },
+                    { name:"Asalto aéreo y paracaidismo" }
+                  ]},
+                  { name:"Equipos", children:[
+                    { name:"FAL, MAG, Pistola, Escopeta, Ametralladora 12,7mm" },
+                    { name:"MK 19, TOW 2, AT4" },
+                    { name:"VUG HUMMER, POLARIS, motos 250cc" },
+                    { name:"Comunicaciones HF, VHF, UHF" }
+                  ]}
+                ]},
+                { name:"Actividades de enseñanza", children:[
+                  { name:"Exposición" }, { name:"Estudio dirigido" }, { name:"Práctica gobernada" }, { name:"Ejercicios aplicativos" }, { name:"Solución de temas tácticos" }
+                ]},
+                { name:"Métodos de enseñanza (foco)", children:[
+                  { name:"Modelo expositivo breve + guía de estudio" },
+                  { name:"Aprendizaje basado en problemas (ABP)" },
+                  { name:"Tácticas de simulación (cartografía / wargame liviano)" },
+                  { name:"Práctica gobernada por estaciones (tiro en seco / comunicaciones)" }
+                ]},
+                { name:"Evaluación (foco)", children:[
+                  { name:"Formativa: lista de cotejo en prácticas" },
+                  { name:"Sumativa: trabajo práctico + parcial oral OO" },
+                  { name:"Desempeño: rol como Jefe de Sección en caso táctico" }
+                ]},
+                { name:"Bibliografía obligatoria", children:[
+                  { name:"ROP-00-15 (2018) La Sección Exploración" },
+                  { name:"RFP-79-01 (2017) Tiro con armas portátiles" },
+                  { name:"RFP-24-02 (2012) Ganado en Servicio" },
+                  { name:"RFP-79-35 (2022) Tiro con MAG 7,62mm" },
+                  { name:"Manual Técnico HUMMER, POLARIS, TOW 2, AT4" }
+                ]}
+              ]
+            },
+            {
+              name: "UD 4: Secciones en Armas Combinadas",
+              brief: "Interoperabilidad con otras armas y apoyos.",
+              children:[
+                { name:"Enfoque", note:"Interoperabilidad con Inf, Art, Ing, Com, Av, Int" },
+                { name:"Actividades", note:"Operaciones combinadas, logística, movilidad/contramovilidad" }
+              ]
+            },
+            {
+              name: "UD 5: Teoría General",
+              brief: "Servicio interno, guarnición, disciplina, documentación.",
+              children:[
+                { name:"Enfoque", note:"Servicio interno, normas y documentación" },
+                { name:"Actividades", note:"Ejercicios aplicativos y discusión guiada" }
+              ]
+            }
+          ]
+        },
+        { name: "Infraestructura", note: "Aulas, gabinetes, anfiteatros y Pabellón de Estudios" }
+      ]
+    };
+
+    // ==============================
+    // 2) D3: Configuración base (radial, zoom, pan)
+    // ==============================
+    const svg = d3.select('#chart');
+    const g = svg.append('g'); // viewport zoomable
+
+    const width = () => document.querySelector('main').clientWidth;
+    const height = () => document.querySelector('main').clientHeight;
+
+    function resize(){ 
+      const w = width();
+      const h = height();
+      svg.attr('width', w).attr('height', h);
+      // Centrar el grupo g en el centro del viewport
+      g.attr('transform', `translate(${w/2}, ${h/2})`);
+      console.log(`SVG resized to ${w}x${h}, g centered at (${w/2}, ${h/2})`);
+    }
+    window.addEventListener('resize', () => { resize(); centerRoot(); });
+    resize();
+
+    const zoom = d3.zoom()
+      .scaleExtent([0.1, 2.5]) // Permitir zoom más pequeño
+      .on('zoom', (event) => {
+        // Solo aplicar zoom y pan, mantener centrado base
+        const transform = event.transform;
+        g.attr('transform', `translate(${width()/2 + transform.x}, ${height()/2 + transform.y}) scale(${transform.k})`);
+      });
+    svg.call(zoom)
+      .on("dblclick.zoom", null) // Deshabilitar doble click zoom
+      .on("wheel.zoom", function(event) {
+        // Zoom centrado en la posición del mouse
+        event.preventDefault();
+        const [mouseX, mouseY] = d3.pointer(event);
+        const transform = d3.zoomTransform(this);
+        const k = transform.k * Math.pow(2, -event.deltaY * 0.002);
+        const newK = Math.max(0.1, Math.min(2.5, k));
+        
+        // Calcular nueva transformación centrada en el mouse
+        const x = mouseX - width()/2;
+        const y = mouseY - height()/2;
+        const newTransform = d3.zoomIdentity
+          .translate(-x * (newK / transform.k - 1), -y * (newK / transform.k - 1))
+          .scale(newK)
+          .translate(transform.x, transform.y);
+        
+        d3.select(this).call(zoom.transform, newTransform);
+      });
+
+    // Layout radial adaptativo con mucho más espacio
+  const radialLayout = d3.cluster().size([2 * Math.PI, Math.min(width(), height())/2 - 60]);
+  function getRadialLayout(node) {
+    const baseRadius = Math.min(width(), height())/2 - 40; // Más espacio disponible
+    const n = (node.children||[]).length;
+    
+    // Radios mucho más grandes para evitar superposición completa
+    let maxRadius;
+    if (n > 8) {
+      maxRadius = baseRadius * 2.5; // 5 veces más espacio
+    } else if (n > 5) {
+      maxRadius = baseRadius * 2.2;
+    } else {
+      maxRadius = baseRadius * 2.0;
+    }
+    
+    return d3.cluster().size([2 * Math.PI, maxRadius]);
+  }
+  let mainRoot = d3.hierarchy(data, d => d.children);
+  let root = mainRoot;
+
+    // Inicial: colapsar todo salvo primer nivel
+    root.x0 = height()/2; root.y0 = 0;
+    root.children?.forEach(collapseAll);
+
+    function collapseAll(d){
+      if(d.children){ d._children = d.children; d._children.forEach(collapseAll); d.children = null; }
+    }
+
+    // Minimapa radial
+    function renderMinimap(){
+      try {
+        const mm = d3.select('#minimap');
+        mm.selectAll('*').remove();
+        const w = 160, h = 160, r = 50;
+        const svgMM = mm.append('svg').attr('width',w).attr('height',h);
+        const gMM = svgMM.append('g').attr('transform',`translate(${w/2},${h/2})`);
+        
+        // Layout minimapa mostrando SOLO la estructura del nivel actual (root)
+        const miniRoot = root.copy();
+        d3.cluster().size([2*Math.PI, r])(miniRoot);
+        
+        // Paleta de colores
+        const levelColors = ["#e3eaf7", "#ffd34d", "#4da3ff", "#54d17a", "#ff6b6b", "#f6f8fa", "#b3c2db"];
+        
+        // Links del nivel actual
+        if(miniRoot.links().length > 0) {
+          gMM.selectAll('path').data(miniRoot.links()).join('path')
+            .attr('d', d => {
+              const a1 = d.source.x - Math.PI/2, a2 = d.target.x - Math.PI/2;
+              const x1 = Math.cos(a1)*d.source.y, y1 = Math.sin(a1)*d.source.y;
+              const x2 = Math.cos(a2)*d.target.y, y2 = Math.sin(a2)*d.target.y;
+              return `M${x1},${y1}L${x2},${y2}`;
+            })
+            .attr('stroke','#4da3ff')
+            .attr('fill','none')
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.7);
+        }
+        
+        // Nodos del nivel actual
+        gMM.selectAll('circle').data(miniRoot.descendants()).join('circle')
+          .attr('cx', d => Math.cos(d.x-Math.PI/2)*d.y)
+          .attr('cy', d => Math.sin(d.x-Math.PI/2)*d.y)
+          .attr('r', d => {
+            if(d.depth === 0) return 8;
+            if(d.depth === 1) return 6;
+            return Math.max(3, 7 - d.depth);
+          })
+          .attr('fill', d => levelColors[d.depth % levelColors.length])
+          .attr('stroke', '#232b3e')
+          .attr('stroke-width', 1)
+          .attr('opacity', 0.9);
+          
+        // Título del minimapa indicando el contexto con jerarquía
+        const isSubLevel = root !== mainRoot;
+        const breadcrumbPath = [];
+        let current = root;
+        while(current && current !== mainRoot) {
+          breadcrumbPath.unshift(current.data.name);
+          current = current.parent;
+        }
+        
+        let titleText = root.data.name;
+        if(breadcrumbPath.length > 1) {
+          titleText = `.../${breadcrumbPath[breadcrumbPath.length-1]}`;
+        }
+        
+        gMM.append('text')
+          .attr('x', 0)
+          .attr('y', -r - 10)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '10px')
+          .attr('fill', isSubLevel ? '#ff6b6b' : '#4da3ff')
+          .attr('font-weight', 'bold')
+          .text(titleText.length > 25 ? 
+            titleText.substring(0, 25) + "..." : 
+            titleText);
+            
+        // Indicador de navegación con profundidad
+        if(isSubLevel) {
+          const depth = breadcrumbPath.length;
+          gMM.append('circle')
+            .attr('cx', r - 8)
+            .attr('cy', -r + 8)
+            .attr('r', 4)
+            .attr('fill', '#ff6b6b')
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1);
+            
+          // Mostrar nivel de profundidad
+          gMM.append('text')
+            .attr('x', r - 8)
+            .attr('y', -r + 12)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '8px')
+            .attr('fill', '#fff')
+            .attr('font-weight', 'bold')
+            .text(depth);
+        }
+            
+      } catch(error) {
+        console.warn('Error renderizando minimapa:', error);
+      }
+    }
+
+    // Navegación por niveles con stack
+    let navigationStack = [mainRoot];
+
+    document.getElementById('btnBack').onclick = () => {
+      // Volver al nivel anterior en el stack
+      if(navigationStack.length > 1) {
+        navigationStack.pop(); // remover el actual
+        const previousRoot = navigationStack[navigationStack.length - 1];
+        root = previousRoot;
+        
+        // Colapsar todos los hijos al volver para vista limpia
+        if(root.children) {
+          root.children.forEach(child => {
+            if(child.children) {
+              collapseDeep(child);
+            }
+          });
+        }
+        
+        update(root);
+        centerRoot();
+        showInfo(root);
+        updateBreadcrumbs(root);
+      }
+    };
+    document.getElementById('btnHomeNav').onclick = () => {
+      // Volver al inicio y resetear stack
+      navigationStack = [mainRoot];
+      root = mainRoot;
+      
+      // Colapsar todo excepto primer nivel
+      if(root.children) {
+        root.children.forEach(collapseDeep);
+      }
+      
+      update(root);
+      centerRoot();
+      showInfo(root);
+      updateBreadcrumbs(root);
+    };
+
+    // Mantener rastro de último foco para breadcrumbs
+    let lastFocused = root;
+
+    // ==============================
+    // 3) Render + animaciones
+    // ==============================
+    function update(source){
+  // Paleta de colores por nivel
+  const levelColors = ["#e3eaf7", "#ffd34d", "#4da3ff", "#54d17a", "#ff6b6b", "#f6f8fa", "#b3c2db"];
+      const duration = 500;
+      const nodes = root.descendants();
+      const links = root.links();
+
+      // Layout radial adaptativo con anillos para niveles profundos
+      const layout = getRadialLayout(root);
+      layout(root);
+      
+      // Ajustar distribución angular y crear anillos concéntricos con mucho más espacio
+      root.descendants().forEach(d => {
+        if (d.children && d.children.length > 0) {
+          const childCount = d.children.length;
+          
+          // Espaciado masivo para niveles profundos
+          const baseRadius = d.y || 0;
+          const ringSpacing = Math.max(300, 200 + childCount * 25); // 5x más espaciado
+          const ringRadius = baseRadius + ringSpacing;
+          
+          // Usar todo el círculo disponible con más separación angular
+          const angleStep = (2 * Math.PI) / childCount;
+          const angleOffset = Math.PI / (childCount * 2); // Mejor distribución
+          
+          d.children.forEach((child, i) => {
+            // Distribuir uniformemente con offset
+            child.x = (i * angleStep) + angleOffset;
+            // Colocar en anillo correspondiente - permitir salir del viewport si es necesario
+            child.y = ringRadius;
+          });
+        }
+      });
+
+      // ------- LINKS --------
+      const link = g.selectAll('path.link').data(links, d => d.target.id || (d.target.id = crypto.randomUUID()));
+      link.join(
+        enter => enter.append('path')
+          .attr('class', 'link')
+          .attr('d', d => radialDiagonal({source: source, target: source}))
+          .transition().duration(duration)
+          .attr('d', radialDiagonal),
+        update => update.transition().duration(duration).attr('d', radialDiagonal),
+        exit => exit.transition().duration(duration)
+          .attr('d', d => radialDiagonal({source: source, target: source}))
+          .remove()
+      );
+
+      // ------- NODES --------
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = crypto.randomUUID()));
+
+      const nodeEnter = node.enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', d => `translate(${polarToCartesian(source.x0, source.y0)})`)
+        .on('click', (event, d) => toggle(d))
+        .on('mouseenter', (event, d) => showInfo(d))
+        .on('mouseleave', () => { /* keep info persistent after click */ });
+
+      // Contenedor con tamaños que realmente contengan el texto
+      nodeEnter.append('rect')
+        .attr('width', d => d.depth > 2 ? 240 : 300)
+        .attr('height', d => d.depth > 2 ? 55 : 70)
+        .attr('x', d => d.depth > 2 ? -120 : -150)
+        .attr('y', d => d.depth > 2 ? -27.5 : -35);
+
+      nodeEnter.append('text')
+        .attr('dy', -8)
+        .text(d => {
+          // Truncar texto largo para nodos profundos
+          const maxLength = d.depth > 2 ? 32 : 45;
+          return d.data.name.length > maxLength ? 
+            d.data.name.substring(0, maxLength) + "..." : 
+            d.data.name;
+        })
+        .attr('x', 0)
+        .attr('text-anchor','middle')
+        .attr('font-size', d => d.depth > 2 ? '16px' : '18px')
+        .attr('font-weight', 'bold');
+
+      // brief / nota pequeña (solo para niveles no muy profundos)
+      nodeEnter.filter(d => d.depth <= 2)
+        .append('text').attr('class','small').attr('dy', 25).attr('x', 0).attr('text-anchor','middle')
+        .text(d => {
+          const brief = d.data.brief || d.data.note || "";
+          return brief.length > 50 ? brief.substring(0, 50) + "..." : brief;
+        });
+
+      // pill de tipo (hoja / tiene hijos) - posición ajustada a contenedores más grandes
+      nodeEnter.filter(d => (d.children || d._children)).append('rect')
+        .attr('class','pill')
+        .attr('x', d => d.depth > 2 ? 105 : 135)
+        .attr('y', -25)
+        .attr('width', 24).attr('height', 20);
+      nodeEnter.filter(d => (d.children || d._children)).append('text')
+        .attr('class','pillText')
+        .attr('x', d => d.depth > 2 ? 117 : 147)
+        .attr('y', -11)
+        .text('⮟');
+
+      // Chevron a la izquierda - posición ajustada a contenedores más grandes
+      nodeEnter.append('text').attr('class','chev')
+        .attr('x', d => d.depth > 2 ? -135 : -165)
+        .attr('y', 5).text('▶');
+
+      const nodeUpdate = nodeEnter.merge(node);
+
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${polarToCartesian(d.x, d.y)})`)
+        .select('rect')
+        .attr('fill', d => levelColors[d.depth % levelColors.length]);
+
+      nodeUpdate.select('.chev').text(d => (d.children ? '▼' : (d._children ? '▶' : '•')))
+        .attr('fill', d => d.children ? '#4da3ff' : (d._children ? '#ffd34d' : '#7a8ca5'));
+
+      node.exit().transition().duration(duration)
+        .attr('transform', d => `translate(${polarToCartesian(source.x, source.y)})`).remove();
+
+      // Guardar posiciones para transiciones
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    // Integrar minimapa con update
+    const originalUpdate = update;
+    update = function(source) {
+      originalUpdate(source);
+      renderMinimap();
+    };
+
+    // Utilidad para convertir coordenadas polares a cartesianas
+    function polarToCartesian(angle, radius){
+      const r = radius, a = angle - Math.PI/2;
+      const x = Math.cos(a) * r;
+      const y = Math.sin(a) * r;
+      return `${x},${y}`;
+    }
+
+    // Diagonal radial para los links
+    function radialDiagonal(d){
+      const s = polarToCartesian(d.source.x, d.source.y);
+      const t = polarToCartesian(d.target.x, d.target.y);
+      return `M${s}L${t}`;
+    }
+
+    function diagonal(d){
+      const path = d3.linkHorizontal().x(d => d.y).y(d => d.x);
+      return path(d);
+    }
+
+    function toggle(d){
+      if(d.children){ 
+        // Colapsar nodo
+        d._children = d.children; 
+        d.children = null; 
+      }
+      else if(d._children){ 
+        // Expandir nodo y colapsar hermanos para evitar superposición
+        if(d.parent && d.parent.children) {
+          d.parent.children.forEach(sibling => {
+            if(sibling !== d && sibling.children) {
+              sibling._children = sibling.children;
+              sibling.children = null;
+            }
+          });
+        }
+        
+        d.children = d._children; 
+        d._children = null; 
+        lastFocused = d; 
+        
+        // Para nodos con más de 3 hijos, crear nueva vista centrada
+        const childCount = (d.children || []).length;
+        if(childCount > 3 || d.depth > 1) {
+          // Agregar al stack de navegación
+          navigationStack.push(root);
+          
+          // Cambiar root pero mantener la estructura original
+          root = d;
+          
+          // Solo colapsar los nietos (hijos de los hijos) para una vista limpia
+          if(root.children) {
+            root.children.forEach(child => {
+              if(child.children) {
+                child._children = child.children;
+                child.children = null;
+              }
+            });
+          }
+          
+          centerRoot();
+        } else {
+          // Para pocos hijos, solo centrar en el nodo
+          const zoomScale = 0.9;
+          centerOnNode(d, 600, zoomScale);
+        }
+      }
+      
+      update(root);
+      showInfo(d);
+      updateBreadcrumbs(d);
+    }
+
+    // ==============================
+    // 4) Utilidades de vista
+    // ==============================
+    function centerRoot(){ 
+      // Resetear zoom con escala que permita ver el contenido completo
+      const t = d3.zoomIdentity.scale(0.6);
+      svg.call(zoom.transform, t);
+      updateBreadcrumbs(root); 
+      showInfo(root); 
+    }
+
+    function centerOnNode(d, ms=500, scale=1){
+      // Centrar en nodo específico
+      const nodeX = Math.cos(d.x - Math.PI/2) * d.y;
+      const nodeY = Math.sin(d.x - Math.PI/2) * d.y;
+      
+      // Aplicar transformación para centrar el nodo
+      const t = d3.zoomIdentity.translate(-nodeX, -nodeY).scale(scale);
+      svg.transition().duration(ms).call(zoom.transform, t);
+    }
+
+    function expandAll(d){
+      if(d._children){ d.children = d._children; d._children = null; }
+      if(d.children){ d.children.forEach(expandAll); }
+    }
+    function collapseDeep(d){
+      if(d.children){ d.children.forEach(collapseDeep); d._children = d.children; d.children = null; }
+    }
+
+    document.getElementById('btnExpand').onclick = () => { expandAll(root); update(root); };
+    document.getElementById('btnCollapse').onclick = () => { root.children?.forEach(collapseDeep); update(root); };
+    document.getElementById('btnHome').onclick = () => {
+      // Volver al root original y colapsar todo excepto el primer nivel
+      root = mainRoot;
+      root.children?.forEach(collapseDeep);
+      update(root);
+      centerRoot();
+    };
+
+    // Foco UD3 - navegación inteligente hacia UD 3
+    document.getElementById('btnFocusUD3').onclick = () => {
+      console.log("Iniciando búsqueda de UD 3...");
+      
+      // Buscar UD 3 con múltiples criterios
+      const ud3 = mainRoot.descendants().find(n => {
+        const name = (n.data.name || "").toLowerCase();
+        const match = name.includes("ud 3") || 
+                     name.includes("unidad 3") || 
+                     name.includes("conducción de sección") ||
+                     name.includes("exploración");
+        console.log("Revisando nodo:", n.data.name, "Match:", match);
+        return match;
+      });
+      
+      console.log("UD 3 encontrado:", ud3);
+      
+      if(ud3){
+        console.log("Navegando a UD 3:", ud3.data.name);
+        
+        // Usar la función toggle directamente (simular click)
+        toggle(ud3);
+        
+        // Mostrar mensaje de éxito
+        setTimeout(() => {
+          alert(`✅ UD 3 encontrado: "${ud3.data.name}"`);
+        }, 1000);
+      } else {
+        // Debug detallado
+        console.log("=== DEBUG: Todos los nodos disponibles ===");
+        mainRoot.descendants().forEach((n, i) => {
+          console.log(`${i}: "${n.data.name}" (depth: ${n.depth})`);
+        });
+        alert("❌ UD 3 no encontrado. Revisa la consola para ver todos los nodos disponibles.");
+      }
+    };
+
+    // Export PNG (simple): usa foreignObject para rasterizar
+    document.getElementById('btnExportPNG').onclick = () => exportPNG();
+    function exportPNG(){
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svg.node());
+      const canvas = document.createElement('canvas');
+      canvas.width = width(); canvas.height = height();
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      const blob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      img.onload = () => { ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url); const a = document.createElement('a'); a.download = 'proyecto-catedra.png'; a.href = canvas.toDataURL('image/png'); a.click(); };
+      img.src = url;
+    }
+
+    // ==============================
+    // 5) Búsqueda sencilla
+    // ==============================
+    function search(term){
+      const t = term.trim().toLowerCase();
+      if(!t){ showInfo(lastFocused); updateBreadcrumbs(lastFocused); return; }
+      const match = root.descendants().find(n => (n.data.name+" "+(n.data.brief||" ")+ (n.data.note||"")).toLowerCase().includes(t));
+      if(match){
+        // Abrir todos los ancestros
+        let curr = match.parent; while(curr){ if(curr._children){ curr.children = curr._children; curr._children = null; } curr = curr.parent; }
+        update(match);
+        centerOnNode(match, 600, 1.2);
+        showInfo(match);
+        updateBreadcrumbs(match);
+      }
+    }
+    document.getElementById('btnSearch').onclick = () => search(document.getElementById('q').value);
+    document.getElementById('q').addEventListener('keydown', (e)=>{ if(e.key==='Enter') search(e.target.value); });
+
+    // ==============================
+    // 6) Breadcrumbs + panel informativo (resumen didáctico)
+    // ==============================
+    function updateBreadcrumbs(d){
+      const trail = d.ancestors().reverse().map(n=>n.data.name);
+      document.getElementById('breadcrumbs').innerHTML = 'Ruta: ' + trail.map((t,i)=> i<trail.length-1? `<span>${t}</span> › `: `<span>${t}</span>`).join('');
+    }
+
+    function showInfo(d){
+      lastFocused = d;
+      const el = document.getElementById('info');
+      const title = d.data.name;
+      const brief = d.data.brief || d.data.note || '';
+      const hasChildren = (d.children||d._children||[]).length>0;
+      let list = '';
+      const items = (d.children||d._children||[]).slice(0,8).map(n=>`<li>${n.data.name}</li>`).join('');
+      if(items) list = `<ul>${items}</ul>`;
+      el.innerHTML = `<h3>${title}</h3><p>${brief}</p>${list}`;
+    }
+
+    // ==============================
+    // 7) Ayuda
+    // ==============================
+    document.getElementById('btnHelp').onclick = () => {
+      alert(`Guía rápida:\n\n• Click en un nodo: abre/cierra y centra.\n• Ctrl + rueda: zoom. Arrastrar: pan.\n• Vista general: centra el diagrama y muestra la estructura maestra.\n• Foco UD 3: salta a la unidad que vas a impartir (métodos y evaluación).\n• Buscar: encuentra y centra el primer nodo que coincida.\n• Exportar PNG: guarda una captura de la vista actual.`);
+    };
+
+    // ==============================
+    // 9) Modo Presentación
+    // ==============================
+    let currentSlide = 0;
+    const presentationSlides = [
+      {
+        title: "Conducción Nivel Sección (Caballería)",
+        content: `
+          <h2>Proyecto de Cátedra</h2>
+          <p>Presentación interactiva para Práctica Supervisada y dictado de la UD 3.</p>
+          <p><strong>Objetivo:</strong> Formar oficiales capaces de conducir una sección de exploración en operaciones tácticas.</p>
+        `
+      },
+      {
+        title: "Perfil por Competencias",
+        content: `
+          <h2>Competencias Clave</h2>
+          <p><strong>• Ética y legalidad:</strong> Actuar según principios éticos y Constitución</p>
+          <p><strong>• Mando y disciplina:</strong> Subordinación, disciplina, liderazgo</p>
+          <p><strong>• Pensamiento crítico:</strong> Reflexivo, analítico e independiente</p>
+          <p><strong>• Aplicación técnica:</strong> Terminología, técnicas y procedimientos operacionales</p>
+          <p><strong>• Comunicación:</strong> Comunicación eficaz vertical y horizontal</p>
+        `
+      },
+      {
+        title: "UD 3: Estándares de Rendimiento",
+        content: `
+          <h2>Lo que el alumno debe lograr</h2>
+          <p><strong>• Principios de exploración:</strong> Aplica procedimientos correctos</p>
+          <p><strong>• Planeamiento lógico:</strong> Utiliza el Proceso de Juicio Táctico (PJT)</p>
+          <p><strong>• Orden de Operaciones:</strong> Confecciona e imparte correctamente</p>
+          <p><strong>• Director de Tiro:</strong> Se desempeña con armas portátiles</p>
+        `
+      },
+      {
+        title: "Métodos de Enseñanza Innovadores",
+        content: `
+          <h2>Enfoque Pedagógico Moderno</h2>
+          <p><strong>• Modelo expositivo breve + guía de estudio:</strong> Teoría dirigida</p>
+          <p><strong>• Aprendizaje basado en problemas (ABP):</strong> Casos reales</p>
+          <p><strong>• Tácticas de simulación:</strong> Cartografía y wargaming liviano</p>
+          <p><strong>• Práctica gobernada por estaciones:</strong> Tiro en seco y comunicaciones</p>
+        `
+      },
+      {
+        title: "Sistema de Evaluación",
+        content: `
+          <h2>Evaluación Integral</h2>
+          <p><strong>• Formativa:</strong> Lista de cotejo en prácticas</p>
+          <p><strong>• Sumativa:</strong> Trabajo práctico + parcial oral de Orden de Operaciones</p>
+          <p><strong>• Desempeño:</strong> Rol como Jefe de Sección en caso táctico</p>
+          <p>La evaluación es continua y se centra en competencias operacionales.</p>
+        `
+      }
+    ];
+
+    function openPresentationMode() {
+      currentSlide = 0;
+      document.getElementById('presentationMode').style.display = 'flex';
+      showSlide(currentSlide);
+    }
+
+    function closePresentationMode() {
+      document.getElementById('presentationMode').style.display = 'none';
+    }
+
+    function showSlide(index) {
+      const slide = presentationSlides[index];
+      document.getElementById('presentationSlide').innerHTML = `
+        <h1 class="presentation-title">${slide.title}</h1>
+        ${slide.content}
+      `;
+    }
+
+    function nextSlide() {
+      if (currentSlide < presentationSlides.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function previousSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    // Conectar botón de tour
+    document.getElementById('btnAutoTour').onclick = startAutoTour;
+
+    // ==============================
+    // Tour Curricular Completo - Presentación sistemática del proyecto
+    // ==============================
+    let isAutoTourRunning = false;
+    let tourTimeout = null;
+    let currentTourStep = 0;
+    
+    const tourSteps = [
+      // INTRODUCCIÓN GENERAL
+      {
+        description: "Proyecto de Cátedra: Conducción Nivel Sección (Caballería)",
+        focus: null,
+        action: "overview",
+        duration: 0, // Manual
+        notes: "Presentación general del proyecto curricular"
+      },
+      
+      // INFORMACIÓN INSTITUCIONAL
+      {
+        description: "1. Información Institucional",
+        focus: "Información Institucional",
+        action: "highlight",
+        duration: 0,
+        notes: "Marco institucional: carrera, resolución, carga horaria"
+      },
+      {
+        description: "1.1 Institución y Carrera",
+        focus: "Carrera",
+        action: "highlight",
+        duration: 0,
+        notes: "Licenciatura en Conducción y Gestión Operativa - RESOL-2019-14-APN-MECCYT"
+      },
+      {
+        description: "1.2 Código y Carga Horaria",
+        focus: "Carga horaria total",
+        action: "highlight",
+        duration: 0,
+        notes: "IVto Año Caballería - 108/144 horas anuales según modalidad"
+      },
+      
+      // PERFIL POR COMPETENCIAS
+      {
+        description: "2. Perfil por Competencias - Marco General",
+        focus: "Perfil por Competencias",
+        action: "highlight",
+        duration: 0,
+        notes: "15 competencias transversales que desarrollarán los cadetes"
+      },
+      {
+        description: "2.1 Ética y legalidad",
+        focus: "Ética y legalidad", 
+        action: "highlight",
+        duration: 0,
+        notes: "Actuar según principios éticos y Constitución"
+      },
+      {
+        description: "2.2 Mando y disciplina",
+        focus: "Mando y disciplina",
+        action: "highlight", 
+        duration: 0,
+        notes: "Subordinación, disciplina, liderazgo"
+      },
+      {
+        description: "2.3 Aplicación técnica",
+        focus: "Aplicación técnica",
+        action: "highlight",
+        duration: 0,
+        notes: "Terminología, técnicas y procedimientos operacionales"
+      },
+      {
+        description: "2.4 Pensamiento crítico",
+        focus: "Pensamiento crítico", 
+        action: "highlight",
+        duration: 0,
+        notes: "Reflexivo, analítico e independiente"
+      },
+      {
+        description: "2.5 Comunicación",
+        focus: "Comunicación",
+        action: "highlight",
+        duration: 0,
+        notes: "Comunicación eficaz vertical y horizontal"
+      },
+      {
+        description: "→ Cerrando sección: Perfil por Competencias",
+        focus: "Perfil por Competencias",
+        action: "close",
+        duration: 0,
+        notes: "Finalizamos la revisión de competencias"
+      },
+      
+      // MARCO REFERENCIAL
+      {
+        description: "3. Marco Referencial",
+        focus: "Marco Referencial",
+        action: "highlight",
+        duration: 0,
+        notes: "Contenidos mínimos, misión, empleo, conducción, normas"
+      },
+      {
+        description: "3.1 Contenidos mínimos",
+        focus: "Contenidos mínimos",
+        action: "highlight",
+        duration: 0,
+        notes: "Misión, empleo táctico, conducción, normas de servicio"
+      },
+      {
+        description: "3.2 Prerrequisitos académicos",
+        focus: "Prerrequisitos",
+        action: "highlight", 
+        duration: 0,
+        notes: "Conducción Nivel Grupo (III Año)"
+      },
+      
+      // ARTICULACIÓN
+      {
+        description: "4. Articulación Curricular",
+        focus: "Articulación",
+        action: "highlight",
+        duration: 0,
+        notes: "Vinculación con otras materias del plan de estudios"
+      },
+      
+      // UNIDAD DIDÁCTICA 3 - FOCO PRINCIPAL
+      {
+        description: "5. UD 3: Conducción de Sección Exploración - LA UNIDAD QUE VOY A DICTAR",
+        focus: "UD 3: Conducción de Sección Exploración",
+        action: "highlight",
+        duration: 0,
+        notes: "Esta es la unidad específica que impartiré en clase"
+      },
+      {
+        description: "4.1 Objetivos de aprendizaje",
+        focus: "Objetivos de aprendizaje",
+        action: "highlight",
+        duration: 0,
+        notes: "Qué deben lograr los cadetes al finalizar"
+      },
+      {
+        description: "4.2 Estándares de rendimiento - INDICADORES DE LOGRO",
+        focus: "Estándares",
+        action: "highlight",
+        duration: 0,
+        notes: "Cómo evalúo que alcanzaron los objetivos"
+      },
+      {
+        description: "4.3 Contenidos conceptuales",
+        focus: "Contenidos",
+        action: "highlight",
+        duration: 0,
+        notes: "Principios, misión, capacidades, organización, táctica"
+      },
+      {
+        description: "4.4 Procedimientos operacionales",
+        focus: "Procedimientos",
+        action: "highlight",
+        duration: 0,
+        notes: "Movimientos, exploración, reconocimientos, logística"
+      },
+      {
+        description: "4.5 Equipos y material",
+        focus: "Equipos",
+        action: "highlight",
+        duration: 0,
+        notes: "Armamento, vehículos, comunicaciones"
+      },
+      {
+        description: "4.6 Actividades de enseñanza - CÓMO ENSEÑO",
+        focus: "Actividades de enseñanza",
+        action: "highlight",
+        duration: 0,
+        notes: "Exposición, estudio dirigido, práctica, ejercicios"
+      },
+      {
+        description: "4.7 Métodos pedagógicos - HERRAMIENTAS DIDÁCTICAS",
+        focus: "Métodos de enseñanza (foco)",
+        action: "highlight",
+        duration: 0,
+        notes: "ABP, simulación, práctica por estaciones"
+      },
+      {
+        description: "4.8 Sistema de evaluación - CÓMO EVALÚO",
+        focus: "Evaluación (foco)",
+        action: "highlight",
+        duration: 0,
+        notes: "Formativa, sumativa, desempeño en rol"
+      },
+      {
+        description: "4.9 Bibliografía obligatoria",
+        focus: "Bibliografía obligatoria",
+        action: "highlight",
+        duration: 0,
+        notes: "Reglamentos y manuales de referencia"
+      },
+      
+      // OTRAS UNIDADES (contexto)
+      {
+        description: "6. Contexto: UD 1 - Principios generales",
+        focus: "UD 1",
+        action: "highlight",
+        duration: 0,
+        notes: "Marco general que antecede a mi unidad"
+      },
+      {
+        description: "7. Contexto: UD 2 - Vehículos de combate",
+        focus: "UD 2",
+        action: "highlight", 
+        duration: 0,
+        notes: "Contenidos técnicos complementarios"
+      },
+      
+      // INFRAESTRUCTURA
+      {
+        description: "8. Recursos e infraestructura",
+        focus: "Infraestructura",
+        action: "highlight",
+        duration: 0,
+        notes: "Espacios físicos y recursos disponibles"
+      },
+      
+      // SÍNTESIS FINAL
+      {
+        description: "Síntesis: Contribución de UD 3 al perfil de egreso",
+        focus: null,
+        action: "overview",
+        duration: 0,
+        notes: "Cómo mi clase contribuye a formar al oficial de caballería"
+      }
+    ];
+
+    function startAutoTour() {
+      if(isAutoTourRunning) {
+        stopAutoTour();
+        return;
+      }
+      
+      isAutoTourRunning = true;
+      currentTourStep = 0;
+      document.getElementById('btnAutoTour').textContent = '⏹ Finalizar Tour';
+      document.getElementById('btnAutoTour').style.background = '#ff6b6b';
+      
+      // Reset completo y limpio al inicio
+      root = mainRoot;
+      navigationStack = [mainRoot];
+      
+      // Colapsar todo de manera ordenada
+      function collapseAll(node) {
+        if(node.children) {
+          node.children.forEach(child => {
+            collapseAll(child);
+            if(child.children) {
+              child._children = child.children;
+              child.children = null;
+            }
+          });
+        }
+      }
+      
+      collapseAll(mainRoot);
+      update(root);
+      centerRoot();
+      
+      // Esperar un momento antes de iniciar para que se vea el reset
+      setTimeout(() => {
+        executeTourStep(0);
+      }, 500);
+    }
+
+    function stopAutoTour() {
+      isAutoTourRunning = false;
+      if(tourTimeout) {
+        clearTimeout(tourTimeout);
+        tourTimeout = null;
+      }
+      document.getElementById('btnAutoTour').textContent = 'Tour Curricular';
+      document.getElementById('btnAutoTour').style.background = '#54d17a';
+      
+      // Ocultar mensaje de tour
+      const tourMessage = document.getElementById('tourMessage');
+      if(tourMessage) tourMessage.remove();
+    }
+
+    function executeTourStep(stepIndex) {
+      if(!isAutoTourRunning || stepIndex >= tourSteps.length) {
+        stopAutoTour();
+        showTourMessage("¡Presentación curricular completada!", tourSteps.length, tourSteps.length);
+        setTimeout(() => {
+          const tourMessage = document.getElementById('tourMessage');
+          if(tourMessage) tourMessage.remove();
+        }, 4000);
+        return;
+      }
+      
+      const step = tourSteps[stepIndex];
+      currentTourStep = stepIndex;
+      
+      // Mostrar mensaje con información pedagógica
+      showTourMessage(step.description, stepIndex + 1, tourSteps.length, step.notes);
+      
+      // Ejecutar acción (ahora SÍ navega automáticamente)
+      if(step.action === "highlight" && step.focus) {
+        navigateAndHighlight(step.focus);
+      } else if(step.action === "overview") {
+        // Volver al inicio con animación suave
+        root = mainRoot;
+        navigationStack = [mainRoot];
+        
+        // Colapsar todo gradualmente
+        function collapseAll(node) {
+          if(node.children) {
+            node.children.forEach(child => {
+              collapseAll(child);
+              if(child.children) {
+                child._children = child.children;
+                child.children = null;
+              }
+            });
+          }
+        }
+        
+        collapseAll(mainRoot);
+        update(root);
+        centerRoot();
+      }
+    }
+
+    function navigateAndHighlight(targetName) {
+      const target = mainRoot.descendants().find(n => 
+        (n.data.name || "").includes(targetName)
+      );
+      
+      if(target) {
+        // Primero, navegar hasta hacer el target visible
+        function makeTargetVisible() {
+          const path = [];
+          let curr = target;
+          while(curr && curr !== mainRoot) {
+            path.unshift(curr);
+            curr = curr.parent;
+          }
+          
+          // Expandir solo lo necesario para hacer visible el target
+          let currentNode = mainRoot;
+          for(let i = 0; i < path.length - 1; i++) {
+            const nextInPath = path[i];
+            if(currentNode._children) {
+              currentNode.children = currentNode._children;
+              currentNode._children = null;
+            }
+            currentNode = nextInPath;
+          }
+          
+          update(root);
+          
+          // Ahora hacer "click" en el target para abrirlo
+          setTimeout(() => {
+            performTargetAction();
+          }, 400);
+        }
+        
+        function performTargetAction() {
+          // Centrar primero en el target
+          centerOnNode(target, 600, 0.8);
+          showInfo(target);
+          
+          // Resaltar el target
+          const targetElement = g.selectAll('.node').filter(d => d === target);
+          targetElement.select('rect')
+            .transition().duration(400)
+            .attr('stroke', '#ff6b6b')
+            .attr('stroke-width', 3);
+          
+          // Si el target tiene hijos, hacer "toggle" para abrirlo
+          setTimeout(() => {
+            if(target._children) {
+              // Simular clic: abrir los hijos
+              target.children = target._children;
+              target._children = null;
+              update(root);
+              
+              // Recentrar para mostrar la nueva estructura
+              setTimeout(() => {
+                centerOnNode(target, 800, 0.7);
+              }, 600);
+            }
+          }, 800);
+          
+          // Después de mostrar el contenido, remover el resaltado
+          setTimeout(() => {
+            targetElement.select('rect')
+              .transition().duration(400)
+              .attr('stroke', '#232b3e')
+              .attr('stroke-width', 1);
+          }, 3000);
+        }
+        
+        makeTargetVisible();
+      }
+    }
+    
+    // Nueva función para cerrar una sección antes de pasar a la siguiente
+    function closeCurrentSection(targetName) {
+      const target = mainRoot.descendants().find(n => 
+        (n.data.name || "").includes(targetName)
+      );
+      
+      if(target && target.children) {
+        // Cerrar los hijos (simular clic de colapso)
+        target._children = target.children;
+        target.children = null;
+        update(root);
+        
+        // Recentrar en el padre
+        setTimeout(() => {
+          if(target.parent) {
+            centerOnNode(target.parent, 600, 0.8);
+          } else {
+            centerRoot();
+          }
+        }, 300);
+      }
+    }
+
+    function showTourMessage(message, current, total, notes = "") {
+      // Remover mensaje anterior
+      const existing = document.getElementById('tourMessage');
+      if(existing) existing.remove();
+      
+      // Crear mensaje más pequeño y menos intrusivo
+      const messageDiv = document.createElement('div');
+      messageDiv.id = 'tourMessage';
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 20px;
+        background: rgba(44, 90, 160, 0.92);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 1000;
+        max-width: 350px;
+        border: 2px solid #4da3ff;
+      `;
+      
+      const notesHTML = notes ? `<div style="font-size: 12px; opacity: 0.9; margin: 8px 0; font-style: italic;">${notes}</div>` : '';
+      
+      messageDiv.innerHTML = `
+        <div style="font-size: 15px; margin-bottom: 8px;">${message}</div>
+        ${notesHTML}
+        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 12px;">Paso ${current} de ${total}</div>
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button onclick="previousTourStep()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" ${current <= 1 ? 'disabled' : ''}>◀</button>
+          <button onclick="nextTourStep()" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px;" ${current >= total ? 'disabled' : ''}>Siguiente ▶</button>
+          <button onclick="stopAutoTour()" style="background: rgba(255,107,107,0.8); border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">✕</button>
+        </div>
+      `;
+      
+      document.body.appendChild(messageDiv);
+    }
+
+    function previousTourStep() {
+      if(currentTourStep > 0) {
+        currentTourStep--;
+        executeTourStep(currentTourStep);
+      }
+    }
+
+    function nextTourStep() {
+      if(currentTourStep < tourSteps.length - 1) {
+        currentTourStep++;
+        executeTourStep(currentTourStep);
+      }
+    }
+
+    // Conectar botón de tour
+    document.getElementById('btnAutoTour').onclick = startAutoTour;
+
+    // Controles de teclado para presentación
+    document.addEventListener('keydown', (event) => {
+      if (document.getElementById('presentationMode').style.display === 'flex') {
+        if (event.key === 'ArrowRight' || event.key === ' ') {
+          nextSlide();
+        } else if (event.key === 'ArrowLeft') {
+          previousSlide();
+        } else if (event.key === 'Escape') {
+          closePresentationMode();
+        }
+      }
+    });
+
+    // ==============================
+    // 10) Inicialización final
+    // ==============================
+    // Asegurar que todas las funciones estén definidas antes de la inicialización
+    update(root);
+    centerRoot();
+  </script>
+</body>
+</html>
