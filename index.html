@@ -180,7 +180,7 @@
 
         <button id="btnAutoTour" class="btn auto-tour-btn" title="Tour Curricular Completo">� Tour Curricular</button>
       </div>
-      <button id="btnExportPNG" class="btn" title="Exportar PNG">Exportar PNG</button>
+      <button id="btnDownloadDoc" class="btn" title="Descargar Proyecto de Cátedra">📄 Descargar Proyecto</button>
       <button id="btnHelp" class="btn" title="Ayuda">Ayuda</button>
     </div>
   </header>
@@ -256,23 +256,68 @@
         },
         {
           name: "Perfil por Competencias",
-          brief: "Ética, mando, técnica, pensamiento crítico, resolución de problemas, comunicación.",
+          brief: "15 competencias profesionales militares según RESOL-2019-14-APN-MECCYT.",
           children: [
-            { name: "Ética y legalidad", note: "Actuar según principios éticos y Constitución." },
-            { name: "Mando y disciplina", note: "Subordinación, disciplina, liderazgo." },
-            { name: "Aplicación técnica", note: "Terminología, técnicas y procedimientos operacionales." },
-            { name: "Pensamiento crítico", note: "Reflexivo, analítico e independiente." },
-            { name: "Resolución de problemas", note: "Anticipar y resolver problemas complejos." },
-            { name: "Marco jurídico y cultural", note: "Normas, historia y cultura institucional." },
-            { name: "Trabajo en equipo", note: "Coordinación por objetivos." },
-            { name: "Aprendizaje continuo", note: "Actualización científica y tecnológica." },
-            { name: "Función pública", note: "Rol del funcionario militar." },
-            { name: "Comunicación", note: "Comunicación eficaz vertical y horizontal." },
-            { name: "Planeamiento táctico", note: "Fundamentos y aplicación por nivel." },
-            { name: "Tiro", note: "Fundamentos y seguridad de tiro." },
-            { name: "Servicios", note: "Normas de seguridad y guarnición." },
-            { name: "Pedagogía", note: "Principios pedagógicos como instructor." },
-            { name: "Conducción táctica", note: "Ejecución de operaciones en diferentes armas." }
+            { 
+              name: "1. Ética Profesional", 
+              note: "Actuar según los principios de una ética profesional basada en el respeto por la Constitución Nacional y las leyes que regulan la aplicación legítima de la fuerza." 
+            },
+            { 
+              name: "2. Mando y Subordinación", 
+              note: "Adherir a los principios de mando, subordinación y disciplina constitutivos de la profesión militar en el marco de las leyes vigentes." 
+            },
+            { 
+              name: "3. Aplicación Operacional", 
+              note: "Aplicar terminología específica, reglas, técnicas y procedimientos operacionales propios de la profesión militar para un desempeño acorde con su jerarquía." 
+            },
+            { 
+              name: "4. Pensamiento Creativo", 
+              note: "Pensar en forma creativa, reflexiva, analítica e independiente, argumentando con fundamento." 
+            },
+            { 
+              name: "5. Resolución de Problemas", 
+              note: "Anticipar, analizar y resolver problemas complejos en forma flexible y eficiente, desde perspectivas diversas y evaluando las consecuencias para sí mismo/a, el personal, los medios a su cargo y su entorno." 
+            },
+            { 
+              name: "6. Marco Jurídico y Tecnológico", 
+              note: "Conocer el marco jurídico y normativo, ciencias, tecnologías, procedimientos, cultura institucional e historia que hacen a la profesión militar." 
+            },
+            { 
+              name: "7. Trabajo en Equipo", 
+              note: "Trabajar en equipo en pos de una meta común acorde a su nivel jerárquico." 
+            },
+            { 
+              name: "8. Aprendizaje Continuo", 
+              note: "Aprender en forma continua y permanente respondiendo a las exigencias que impone el desarrollo del conocimiento, los avances científicos y tecnológicos y su impacto en el ámbito de la defensa y su desempeño profesional." 
+            },
+            { 
+              name: "9. Función Pública", 
+              note: "Comprender su rol y actuar como funcionario público profesional militar." 
+            },
+            { 
+              name: "10. Comunicación Fluida", 
+              note: "Comunicarse fluidamente con superiores, pares y subordinados de su propia fuerza, otras fuerzas nacionales y extranjeras y agentes representantes de instituciones de acuerdo a las características propias de cada contexto." 
+            },
+            { 
+              name: "11. Planeamiento Terrestre", 
+              note: "Comprender los fundamentos y principios básicos del planeamiento terrestre y aplicarlos según su nivel de conducción acordes con su Arma o Especialidad." 
+            },
+            { 
+              name: "12. Fundamentos de Tiro", 
+              note: "Dominar los fundamentos teóricos del tiro y aplicar las medidas de seguridad contra accidentes en la organización y ejecución del tiro práctico con las distintas armas de dotación del Ejército, acordes con su rol y función." 
+            },
+            { 
+              name: "13. Servicio Militar", 
+              note: "Aplicar normas y disposiciones inherentes al servicio de seguridad, servicio interno y servicio en guarnición acordes con su jerarquía o función." 
+            },
+            { 
+              name: "14. Pedagogía y Didáctica", 
+              note: "Aplicar los principios básicos de la pedagogía y la didáctica para desempeñarse como Educador e Instructor de la fracción a su cargo utilizando, cuando corresponda, herramientas de simulación, técnicas y procedimientos de empleo propios de su Arma o Especialidad." 
+            },
+            { 
+              name: "15. Conducción de Operaciones", 
+              note: "Emplear principios y procedimientos de la conducción relacionados con el planeamiento y ejecución de operaciones tácticas de las Armas de: Infantería; Caballería; Artillería; Ingenieros y Comunicaciones." 
+            }
           ]
         },
         {
@@ -357,100 +402,199 @@
         },
         {
           name: "Unidades Didácticas",
-          brief: "UD1 Morteros · UD2 Tanques · UD3 Exploración · UD4 Armas combinadas · UD5 Teoría General",
+          brief: "Programa académico completo: UD1 Morteros, UD2 Tanques, UD3 Exploración, UD4 Armas Combinadas, UD5 Teoría General",
           children: [
             {
               name: "UD 1: Conducción de Sección Morteros",
-              brief: "Fuegos de apoyo. 81/120 mm y VCTM.",
+              brief: "Planeamiento y ejecución de operaciones de combate básicas con morteros 81mm/120mm y VCTM.",
               children:[
-                { name:"Enfoque", note:"Planeamiento y ejecución de fuegos de apoyo" },
-                { name:"Equipos", note:"Mortero 81mm, 120mm, VCTM" },
-                { name:"Actividades", children:[
-                  { name:"Estudio dirigido" }, { name:"Práctica gobernada" }, { name:"Ejercicios tácticos" }
+                { name:"Competencias", children:[
+                  { name:"Identificar actividades de planeamiento y ejecución de OCB" },
+                  { name:"Aplicar fundamentos del planeamiento de apoyos de fuegos" },
+                  { name:"Conducir Sección Morteros en ambiente geográfico particular" },
+                  { name:"Director de Tiro con VCTM o Morteros Brand 81/120mm" },
+                  { name:"Aplicar medidas de seguridad contra accidentes" }
+                ]},
+                { name:"Estándares de Rendimiento", children:[
+                  { name:"Aplica principios para conducción de Sección Morteros" },
+                  { name:"Elabora planeamiento lógico con procedimientos básicos" },
+                  { name:"Confecciona plan de apoyo de fuego nivel sección" },
+                  { name:"Imparte órdenes acordes a situaciones tácticas" },
+                  { name:"Identifica teoría de tiro y sistemas de armas" },
+                  { name:"Se desempeña como Director de Tiro" }
+                ]},
+                { name:"Contenidos", children:[
+                  { name:"Conceptos de empleo y organización" },
+                  { name:"Táctica de la Sección Morteros" },
+                  { name:"Apoyo de fuego (coordinación, dirección, control)" },
+                  { name:"Técnicas para combate en operaciones ofensivas/defensivas" },
+                  { name:"Equipos: Mortero Brand 81/120mm, VCTM, calculadora HP" },
+                  { name:"Proceder del Jefe de Tropas" },
+                  { name:"Bases teóricas para tiro particular" }
+                ]},
+                { name:"Bibliografía Obligatoria", children:[
+                  { name:"ROB-00-01 (2015) Conducción para las Fuerzas Terrestres" },
+                  { name:"ROP-00-14 (2010) La Sección Morteros Pesados" },
+                  { name:"PT-21-7 (1961) Mortero BRANDT Cal 81mm" },
+                  { name:"RFP-74-03 (1976) Equitación" },
+                  { name:"RFD-99-02 (2001) Escritura en Campaña" }
                 ]}
               ]
             },
             {
               name: "UD 2: Conducción de Sección Tanques",
-              brief: "VC TAM, SK-105. Teoría de tiro y OO.",
+              brief: "Operaciones de combate básicas con VC TAM y SK-105. Teoría de tiro y orden de operaciones.",
               children:[
-                { name:"Enfoque", note:"Operaciones de combate con VC TAM y SK 105" },
-                { name:"Contenidos", note:"Orden de operaciones, teoría de tiro de tanques" },
-                { name:"Actividades", children:[
-                  { name:"Ejercicios aplicativos" }, { name:"Solución de problemas tácticos" }
+                { name:"Competencias", children:[
+                  { name:"Planeamiento y ejecución de OCB con Sección Tanques" },
+                  { name:"Aplicar fundamentos del planeamiento de orden de operaciones" },
+                  { name:"Conducir Sección Tanques en ambiente geográfico particular" },
+                  { name:"Director de Tiro con Tanques TAM y SK-105" },
+                  { name:"Aplicar medidas de seguridad y reglas de oro" }
+                ]},
+                { name:"Estándares de Rendimiento", children:[
+                  { name:"Aplica principios para conducción de Sección Tanques" },
+                  { name:"Distingue y elabora planeamiento lógico con PJT" },
+                  { name:"Confecciona e imparte Orden de Operaciones nivel sección" },
+                  { name:"Aplica técnicas y procedimientos en operaciones tácticas" },
+                  { name:"Identifica teoría de tiro de distintas armas" },
+                  { name:"Se desempeña como Director de Tiro de Tanques" }
+                ]},
+                { name:"Contenidos", children:[
+                  { name:"Conceptos de empleo: capacidades, limitaciones, organización" },
+                  { name:"Misiones del Jefe/Encargado/Conductor/Apuntador/Cargador" },
+                  { name:"Táctica: Operaciones, MCC, tipos de procedimientos" },
+                  { name:"Procedimientos de Protección (posiciones, ubicación)" },
+                  { name:"Combate en Localidades, AGP Montaña y Monte" },
+                  { name:"VC TAM y SK-105: sistemas, munición, manejo de torre" },
+                  { name:"Proceder del Jefe de Tropas (apreciación METT)" }
+                ]},
+                { name:"Bibliografía Obligatoria", children:[
+                  { name:"ROP-02-11-II (2016) La Sección de Tanques (a tres tanques)" },
+                  { name:"RFP-02-02 (1995) Tiro con Tanque VCTAM" },
+                  { name:"RFP-02-03 (1994) Tiro de Tanques VC AMX 13 y SK 105" },
+                  { name:"RFP-02-05 (2016) Manual de Exigencias de Tiro Blindados" },
+                  { name:"PT-21-56-I/VI (1987) VC TAM - Chasis y Armamento" }
                 ]}
               ]
             },
             {
               name: "UD 3: Conducción de Sección Exploración",
-              brief: "Planeamiento y ejecución de exploración. Métodos y evaluación (foco).",
+              brief: "LA UNIDAD QUE VOY A DICTAR - Operaciones complementarias, exploración a pie/montado, tiro con armas portátiles.",
               children:[
-                { name:"Objetivos de aprendizaje", children:[
-                  { name:"Planear y ejecutar operaciones complementarias" },
-                  { name:"Conducir exploración en vehículo, aeronave o ganado" },
-                  { name:"Aplicar teoría y seguridad de tiro con armas portátiles y VVCC" }
+                { name:"Competencias", children:[
+                  { name:"Planeamiento y ejecución de operaciones complementarias" },
+                  { name:"Aplicar fundamentos del planeamiento terrestre" },
+                  { name:"Conducir Sección Exploración (pie/vehículo/aeronave/ganado)" },
+                  { name:"Director de Tiro: MOTE, MOTEP, escopeta, AME 12,7mm" },
+                  { name:"Aplicar medidas de seguridad con armas portátiles y VVCC" }
                 ]},
-                { name:"Estándares", children:[
-                  { name:"Aplica principios y procedimientos de exploración" },
-                  { name:"Planeamiento lógico con PJT" },
-                  { name:"Confecciona e imparte Orden de Operaciones" },
-                  { name:"Se desempeña como Director de Tiro (armas portátiles)" }
+                { name:"Estándares de Rendimiento", children:[
+                  { name:"Aplica principios, técnicas y procedimientos de exploración" },
+                  { name:"Elabora planeamiento lógico con procedimientos de combate" },
+                  { name:"Confecciona e imparte orden de operaciones nivel sección" },
+                  { name:"Aplica principios en ejecución de operaciones tácticas" },
+                  { name:"Identifica teoría de tiro de armas y sistemas" },
+                  { name:"Emplea técnicas de asalto aéreo según nivel de conducción" },
+                  { name:"Se desempeña como Director de Tiro armas portátiles" }
                 ]},
                 { name:"Contenidos", children:[
-                  { name:"Conceptos", note:"Principios, misión, capacidades y organización de la sección" },
-                  { name:"Táctica", note:"Operaciones ofensivas, defensivas y complementarias" },
-                  { name:"Procedimientos", children:[
-                    { name:"Movimientos (a pie y en vehículo)" },
-                    { name:"Exploración desmontada y montada" },
-                    { name:"Reconocimientos" },
-                    { name:"Sostén logístico" },
-                    { name:"Exploración en localidades, montaña y con ganado" },
-                    { name:"Asalto aéreo y paracaidismo" }
-                  ]},
-                  { name:"Equipos", children:[
-                    { name:"FAL, MAG, Pistola, Escopeta, Ametralladora 12,7mm" },
-                    { name:"MK 19, TOW 2, AT4" },
-                    { name:"VUG HUMMER, POLARIS, motos 250cc" },
-                    { name:"Comunicaciones HF, VHF, UHF" }
-                  ]}
+                  { name:"Conceptos de empleo", note:"Principios, misión, capacidades, limitaciones, organización" },
+                  { name:"Comunicaciones", note:"Facilidades, criterios de emisión, normas operacionales" },
+                  { name:"Informes y coordinación", note:"Diagramas de navegación, identificación blindados/AT" },
+                  { name:"Táctica", note:"Operaciones tácticas y complementarias, MCC" },
+                  { name:"Movimientos", note:"Conceptos, aspectos fundamentales, vehículo y a pie" },
+                  { name:"Exploración", note:"Tipos, procedimientos, desmontada/montada, sensores" },
+                  { name:"Reconocimientos", note:"Clasificación, empleo de la sección" },
+                  { name:"Técnicas básicas", note:"Infiltración, puntos reunión, técnicas estáticas/dinámicas" },
+                  { name:"Ambientes especiales", note:"Localidades, ganado equino/mular, asalto aéreo" },
+                  { name:"Equipos y armamento", note:"FAL, MAG, Pistola, Granada, Escopeta, AME 12,7mm" },
+                  { name:"Sistemas avanzados", note:"MK 19, TOW 2, AT4, radares" },
+                  { name:"Vehículos", note:"VUG HUMMER, POLARIS, motos SUZUKI/YAMAHA 250cc" },
+                  { name:"Proceder Jefe de Tropas", note:"Análisis misión, situación, solución, órdenes" }
                 ]},
                 { name:"Actividades de enseñanza", children:[
-                  { name:"Exposición" }, { name:"Estudio dirigido" }, { name:"Práctica gobernada" }, { name:"Ejercicios aplicativos" }, { name:"Solución de temas tácticos" }
+                  { name:"Exposición magistral" },
+                  { name:"Estudio dirigido con guías" },
+                  { name:"Práctica gobernada en estaciones" },
+                  { name:"Ejercicios aplicativos con cartografía" },
+                  { name:"Solución de temas tácticos" },
+                  { name:"Pistas de entrenamiento" }
                 ]},
-                { name:"Métodos de enseñanza (foco)", children:[
-                  { name:"Modelo expositivo breve + guía de estudio" },
-                  { name:"Aprendizaje basado en problemas (ABP)" },
-                  { name:"Tácticas de simulación (cartografía / wargame liviano)" },
-                  { name:"Práctica gobernada por estaciones (tiro en seco / comunicaciones)" }
+                { name:"Métodos de enseñanza (FOCO)", children:[
+                  { name:"Aprendizaje Basado en Problemas (ABP)" },
+                  { name:"Simulación táctica con cartografía" },
+                  { name:"Práctica por estaciones rotativas" },
+                  { name:"Estudio dirigido con casos reales" }
                 ]},
-                { name:"Evaluación (foco)", children:[
-                  { name:"Formativa: lista de cotejo en prácticas" },
-                  { name:"Sumativa: trabajo práctico + parcial oral OO" },
-                  { name:"Desempeño: rol como Jefe de Sección en caso táctico" }
+                { name:"Evaluación (FOCO)", children:[
+                  { name:"Formativa", note:"Listas de cotejo en prácticas" },
+                  { name:"Sumativa", note:"Trabajo práctico + examen parcial" },
+                  { name:"Desempeño en rol", note:"Como Jefe de Sección en ejercicio" },
+                  { name:"Pruebas de habilitación", note:"Pistas y ejercicios aplicativos" }
                 ]},
                 { name:"Bibliografía obligatoria", children:[
                   { name:"ROP-00-15 (2018) La Sección Exploración" },
-                  { name:"RFP-79-01 (2017) Tiro con armas portátiles" },
                   { name:"RFP-24-02 (2012) Ganado en Servicio" },
-                  { name:"RFP-79-35 (2022) Tiro con MAG 7,62mm" },
-                  { name:"Manual Técnico HUMMER, POLARIS, TOW 2, AT4" }
+                  { name:"RFP-79-01 (2017) Tiro con armas portátiles" },
+                  { name:"RFP-79-35 (2022) Tiro con MAG Cal 7,62mm" },
+                  { name:"RFP-79-05 (1994) Tiro con Ametralladora 12,7mm" },
+                  { name:"ROP-79-02 (2015) Tiro con Escopeta" },
+                  { name:"Manual Técnico VUG HUMMER, POLARIS, SUZUKI" },
+                  { name:"RFT-79-01 (2019) Arma Anti Tanque AT4 84mm" }
                 ]}
               ]
             },
             {
-              name: "UD 4: Secciones en Armas Combinadas",
-              brief: "Interoperabilidad con otras armas y apoyos.",
+              name: "UD 4: Secciones en Sistema de Armas Combinadas",
+              brief: "Interoperabilidad con Infantería, Artillería, Ingenieros, Comunicaciones, Aviación e Inteligencia.",
               children:[
-                { name:"Enfoque", note:"Interoperabilidad con Inf, Art, Ing, Com, Av, Int" },
-                { name:"Actividades", note:"Operaciones combinadas, logística, movilidad/contramovilidad" }
+                { name:"Competencias", children:[
+                  { name:"Emplear comunicaciones durante operaciones tácticas" },
+                  { name:"Confeccionar Pedido Inicial de Fuego (PIF)" },
+                  { name:"Operar equipos de comunicaciones por dotación" },
+                  { name:"Participar en actividades logísticas operacionales" },
+                  { name:"Aplicar movilidad y contra-movilidad" },
+                  { name:"Ejecutar operaciones de asalto aéreo" },
+                  { name:"Planificar operaciones aerotransportadas" }
+                ]},
+                { name:"Contenidos por Arma", children:[
+                  { name:"Infantería", note:"OCB, combate en localidades, proceder JT" },
+                  { name:"Artillería", note:"Apoyo de fuego, observador adelantado, CDF" },
+                  { name:"Ingenieros", note:"Movilidad, contramovilidad, humo, demoliciones" },
+                  { name:"Comunicaciones", note:"Empleo de equipos de comunicaciones" },
+                  { name:"Arsenales", note:"Sistemas de abastecimiento y mantenimiento" },
+                  { name:"Intendencia", note:"Sistemas de distribución de efectos" },
+                  { name:"Aviación de Ejército", note:"Exploración, operaciones aerotransportadas" },
+                  { name:"Inteligencia", note:"Exploración, seguridad, vigilancia terrestre" }
+                ]}
               ]
             },
             {
               name: "UD 5: Teoría General",
-              brief: "Servicio interno, guarnición, disciplina, documentación.",
+              brief: "Servicio interno, guarnición, disciplina militar, seguridad y documentación.",
               children:[
-                { name:"Enfoque", note:"Servicio interno, normas y documentación" },
-                { name:"Actividades", note:"Ejercicios aplicativos y discusión guiada" }
+                { name:"Competencias", children:[
+                  { name:"Identificar conceptos de servicio interno y guarnición" },
+                  { name:"Cumplir normas de leyes y reglamentos militares" },
+                  { name:"Desempeñar funciones en comisiones de casinos" },
+                  { name:"Aplicar medidas de seguridad del Arma de Caballería" }
+                ]},
+                { name:"Contenidos", children:[
+                  { name:"Servicio de Seguridad", note:"Guardia de Prevención, FEI, Oficial de Servicio" },
+                  { name:"Servicio Interno", note:"Personal fijo/móvil, Oficial Veedor, documentación" },
+                  { name:"Medio Ambiente", note:"Preservación como misión subsidiaria del EA" },
+                  { name:"Disciplina", note:"Legislación militar, faltas, sanciones, código FFAA" },
+                  { name:"Seguridad contra Accidentes", note:"Prevención, medidas particulares del Arma" },
+                  { name:"Documentación", note:"Notas, actuaciones, informes, libros oficiales" }
+                ]},
+                { name:"Bibliografía Obligatoria", children:[
+                  { name:"RFP-70-01 (2018) Servicio Interno y Guarnición" },
+                  { name:"RB-00-01 (1997) El Ejército Argentino" },
+                  { name:"PE-00-03 (2009) Código de Disciplina FFAA" },
+                  { name:"RFP-00-01 (2000) Seguridad contra Accidentes" },
+                  { name:"Normas para el Funcionamiento Interno del CMN" }
+                ]}
               ]
             }
           ]
@@ -957,19 +1101,13 @@
       }
     };
 
-    // Export PNG (simple): usa foreignObject para rasterizar
-    document.getElementById('btnExportPNG').onclick = () => exportPNG();
-    function exportPNG(){
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svg.node());
-      const canvas = document.createElement('canvas');
-      canvas.width = width(); canvas.height = height();
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      const blob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      img.onload = () => { ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url); const a = document.createElement('a'); a.download = 'proyecto-catedra.png'; a.href = canvas.toDataURL('image/png'); a.click(); };
-      img.src = url;
+    // Descargar documento Word del proyecto de cátedra
+    document.getElementById('btnDownloadDoc').onclick = () => downloadDocument();
+    function downloadDocument(){
+      const link = document.createElement('a');
+      link.href = './presentacion-profesorado/Proy de Cátedra - CNSC-   IVto Año Esc C.doc';
+      link.download = 'Proyecto de Cátedra - Conducción Nivel Sección.doc';
+      link.click();
     }
 
     // ==============================
@@ -1015,7 +1153,7 @@
     // 7) Ayuda
     // ==============================
     document.getElementById('btnHelp').onclick = () => {
-      alert(`Guía rápida:\n\n• Click en un nodo: abre/cierra y centra.\n• Ctrl + rueda: zoom. Arrastrar: pan.\n• Vista general: centra el diagrama y muestra la estructura maestra.\n• Foco UD 3: salta a la unidad que vas a impartir (métodos y evaluación).\n• Buscar: encuentra y centra el primer nodo que coincida.\n• Exportar PNG: guarda una captura de la vista actual.`);
+      alert(`Guía rápida:\n\n• Click en un nodo: abre/cierra y centra.\n• Ctrl + rueda: zoom. Arrastrar: pan.\n• Vista general: centra el diagrama y muestra la estructura maestra.\n• Foco UD 3: salta a la unidad que vas a impartir (métodos y evaluación).\n• Buscar: encuentra y centra el primer nodo que coincida.\n• Descargar Proyecto: descarga el documento Word completo.`);
     };
 
     // ==============================
@@ -1148,6 +1286,13 @@
         duration: 0,
         notes: "IVto Año Caballería - 108/144 horas anuales según modalidad"
       },
+      {
+        description: "→ Cerrando sección: Información Institucional",
+        focus: "Información Institucional",
+        action: "close",
+        duration: 0,
+        notes: "Completamos la revisión de la información institucional"
+      },
       
       // PERFIL POR COMPETENCIAS
       {
@@ -1158,39 +1303,39 @@
         notes: "15 competencias transversales que desarrollarán los cadetes"
       },
       {
-        description: "2.1 Ética y legalidad",
-        focus: "Ética y legalidad", 
+        description: "2.1 Ética Profesional",
+        focus: "1. Ética Profesional",
         action: "highlight",
         duration: 0,
-        notes: "Actuar según principios éticos y Constitución"
+        notes: "Actuar según principios éticos basados en el respeto por la Constitución Nacional"
       },
       {
-        description: "2.2 Mando y disciplina",
-        focus: "Mando y disciplina",
-        action: "highlight", 
-        duration: 0,
-        notes: "Subordinación, disciplina, liderazgo"
-      },
-      {
-        description: "2.3 Aplicación técnica",
-        focus: "Aplicación técnica",
+        description: "2.2 Mando y Subordinación",
+        focus: "2. Mando y Subordinación",
         action: "highlight",
         duration: 0,
-        notes: "Terminología, técnicas y procedimientos operacionales"
+        notes: "Adherir a principios de mando, subordinación y disciplina militares"
       },
       {
-        description: "2.4 Pensamiento crítico",
-        focus: "Pensamiento crítico", 
+        description: "2.3 Aplicación Operacional",
+        focus: "3. Aplicación Operacional",
         action: "highlight",
         duration: 0,
-        notes: "Reflexivo, analítico e independiente"
+        notes: "Aplicar terminología, técnicas y procedimientos propios de la profesión militar"
       },
       {
-        description: "2.5 Comunicación",
-        focus: "Comunicación",
+        description: "2.4 Pensamiento Creativo",
+        focus: "4. Pensamiento Creativo",
         action: "highlight",
         duration: 0,
-        notes: "Comunicación eficaz vertical y horizontal"
+        notes: "Pensar en forma creativa, reflexiva, analítica e independiente"
+      },
+      {
+        description: "2.5 Resolución de Problemas",
+        focus: "5. Resolución de Problemas",
+        action: "highlight",
+        duration: 0,
+        notes: "Anticipar, analizar y resolver problemas complejos de forma eficiente"
       },
       {
         description: "→ Cerrando sección: Perfil por Competencias",
@@ -1249,10 +1394,10 @@
       // UNIDADES DIDÁCTICAS - RECORRIDO COMPLETO
       {
         description: "5. Unidades Didácticas del Programa",
-        focus: "Unidades Temáticas",
+        focus: "Unidades Didácticas",
         action: "highlight",
         duration: 0,
-        notes: "Revisión de las 3 unidades del programa"
+        notes: "Revisión de las 5 unidades del programa"
       },
       {
         description: "5.1 UD 1: Conducción de Sección Morteros",
@@ -1304,53 +1449,32 @@
         notes: "Cómo evalúo que alcanzaron los objetivos"
       },
       {
-        description: "4.3 Contenidos conceptuales",
+        description: "3.3 Contenidos conceptuales y procedimentales",
         focus: "Contenidos",
         action: "highlight",
         duration: 0,
-        notes: "Principios, misión, capacidades, organización, táctica"
+        notes: "Conceptos de empleo, táctica, movimientos, exploración, reconocimientos"
       },
       {
-        description: "4.4 Procedimientos operacionales",
-        focus: "Procedimientos",
-        action: "highlight",
-        duration: 0,
-        notes: "Movimientos, exploración, reconocimientos, logística"
-      },
-      {
-        description: "4.5 Equipos y material",
-        focus: "Equipos",
-        action: "highlight",
-        duration: 0,
-        notes: "Armamento, vehículos, comunicaciones"
-      },
-      {
-        description: "4.6 Actividades de enseñanza - CÓMO ENSEÑO",
+        description: "3.4 Actividades de enseñanza - CÓMO ENSEÑO",
         focus: "Actividades de enseñanza",
         action: "highlight",
         duration: 0,
         notes: "Exposición, estudio dirigido, práctica, ejercicios"
       },
       {
-        description: "4.7 Métodos pedagógicos - HERRAMIENTAS DIDÁCTICAS",
-        focus: "Métodos de enseñanza (foco)",
+        description: "3.5 Evaluación - CÓMO EVALÚO",
+        focus: "Evaluación",
         action: "highlight",
         duration: 0,
-        notes: "ABP, simulación, práctica por estaciones"
+        notes: "Trabajo práctico, examen parcial, examen final, pistas"
       },
       {
-        description: "4.8 Sistema de evaluación - CÓMO EVALÚO",
-        focus: "Evaluación (foco)",
-        action: "highlight",
-        duration: 0,
-        notes: "Formativa, sumativa, desempeño en rol"
-      },
-      {
-        description: "5.3.9 Bibliografía obligatoria",
+        description: "3.6 Bibliografía obligatoria",
         focus: "Bibliografía obligatoria",
         action: "highlight",
         duration: 0,
-        notes: "Reglamentos y manuales de referencia"
+        notes: "ROP-00-15, RFP-24-02, RFP-79-01 y otros reglamentos"
       },
       {
         description: "→ Cerrando UD 3: Conducción de Sección Exploración",
@@ -1360,11 +1484,39 @@
         notes: "Finalizamos la revisión detallada de mi unidad didáctica"
       },
       {
-        description: "→ Cerrando sección: Unidades Temáticas",
-        focus: "Unidades Temáticas",
+        description: "5.4 UD 4: Sistema de Armas Combinadas",
+        focus: "UD 4: Conducción de las Secciones del Arma de Caballería en el Sistema de Armas Combinadas",
+        action: "highlight",
+        duration: 0,
+        notes: "Interoperabilidad con otras armas y especialidades"
+      },
+      {
+        description: "→ Cerrando UD 4",
+        focus: "UD 4: Conducción de las Secciones del Arma de Caballería en el Sistema de Armas Combinadas",
         action: "close",
         duration: 0,
-        notes: "Completamos la revisión de todas las unidades"
+        notes: "Finalizamos revisión de UD 4"
+      },
+      {
+        description: "5.5 UD 5: Teoría General",
+        focus: "UD 5: Teoría General",
+        action: "highlight",
+        duration: 0,
+        notes: "Servicio interno, disciplina, documentación militar"
+      },
+      {
+        description: "→ Cerrando UD 5",
+        focus: "UD 5: Teoría General",
+        action: "close",
+        duration: 0,
+        notes: "Finalizamos revisión de UD 5"
+      },
+      {
+        description: "→ Cerrando sección: Unidades Didácticas",
+        focus: "Unidades Didácticas",
+        action: "close",
+        duration: 0,
+        notes: "Completamos la revisión de todas las 5 unidades"
       },
       
       // METODOLOGÍA Y EVALUACIÓN GENERAL
@@ -1521,7 +1673,9 @@
       );
       
       if(target) {
-        // Primero, navegar hasta hacer el target visible
+        console.log(`🎯 Tour navegando a: "${target.data.name}"`);
+        
+        // Paso 1: Hacer visible el target (abrir sus ancestros)
         function makeTargetVisible() {
           const path = [];
           let curr = target;
@@ -1530,7 +1684,7 @@
             curr = curr.parent;
           }
           
-          // Expandir solo lo necesario para hacer visible el target
+          // Expandir ancestros sin usar toggle para no activar centrado
           let currentNode = mainRoot;
           for(let i = 0; i < path.length - 1; i++) {
             const nextInPath = path[i];
@@ -1543,40 +1697,35 @@
           
           update(root);
           
-          // Ahora hacer "click" en el target para abrirlo
           setTimeout(() => {
-            performTargetAction();
-          }, 400);
+            simulateRealClick();
+          }, 300);
         }
         
-        function performTargetAction() {
-          // Centrar primero en el target
-          centerOnNode(target, 600, 0.8);
-          showInfo(target);
+        // Paso 2: Simular click real en el target usando toggle()
+        function simulateRealClick() {
+          console.log(`👆 Simulando click en: "${target.data.name}"`);
           
-          // Resaltar el target
+          // Resaltar el target antes del click
           const targetElement = g.selectAll('.node').filter(d => d === target);
           targetElement.select('rect')
-            .transition().duration(400)
+            .transition().duration(300)
             .attr('stroke', '#ff6b6b')
             .attr('stroke-width', 3);
           
-          // Si el target tiene hijos, hacer "toggle" para abrirlo
+          // Usar la función toggle REAL después de un delay
           setTimeout(() => {
-            if(target._children) {
-              // Simular clic: abrir los hijos
-              target.children = target._children;
-              target._children = null;
-              update(root);
-              
-              // Recentrar para mostrar la nueva estructura
-              setTimeout(() => {
-                centerOnNode(target, 800, 0.7);
-              }, 600);
-            }
-          }, 800);
+            // ESTE ES EL CLICK REAL - usa la misma lógica que el click manual
+            toggle(target);
+            
+            // Mostrar info como en click real
+            showInfo(target);
+            updateBreadcrumbs(target);
+            
+            console.log(`✅ Click ejecutado en: "${target.data.name}"`);
+          }, 500);
           
-          // Después de mostrar el contenido, remover el resaltado
+          // Remover resaltado después
           setTimeout(() => {
             targetElement.select('rect')
               .transition().duration(400)
@@ -1586,6 +1735,8 @@
         }
         
         makeTargetVisible();
+      } else {
+        console.warn(`❌ No se encontró el target: "${targetName}"`);
       }
     }
     
@@ -1595,20 +1746,18 @@
         (n.data.name || "").includes(targetName)
       );
       
-      if(target && target.children) {
-        // Cerrar los hijos (simular clic de colapso)
-        target._children = target.children;
-        target.children = null;
-        update(root);
+      if(target) {
+        console.log(`🔒 Cerrando sección: "${target.data.name}"`);
         
-        // Recentrar en el padre
-        setTimeout(() => {
-          if(target.parent) {
-            centerOnNode(target.parent, 600, 0.8);
-          } else {
-            centerRoot();
-          }
-        }, 300);
+        // Si el target está expandido, usar toggle para cerrarlo
+        if(target.children) {
+          toggle(target);
+          console.log(`✅ Sección cerrada: "${target.data.name}"`);
+        } else {
+          console.log(`ℹ️  Sección ya estaba cerrada: "${target.data.name}"`);
+        }
+      } else {
+        console.warn(`❌ No se encontró la sección para cerrar: "${targetName}"`);
       }
     }
 
