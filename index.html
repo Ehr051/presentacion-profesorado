@@ -1222,6 +1222,13 @@
         duration: 0,
         notes: "Conducción Nivel Grupo (III Año)"
       },
+      {
+        description: "→ Cerrando sección: Marco Referencial",
+        focus: "Marco Referencial",
+        action: "close",
+        duration: 0,
+        notes: "Completamos la revisión del marco referencial"
+      },
       
       // ARTICULACIÓN
       {
@@ -1231,10 +1238,52 @@
         duration: 0,
         notes: "Vinculación con otras materias del plan de estudios"
       },
-      
-      // UNIDAD DIDÁCTICA 3 - FOCO PRINCIPAL
       {
-        description: "5. UD 3: Conducción de Sección Exploración - LA UNIDAD QUE VOY A DICTAR",
+        description: "→ Cerrando sección: Articulación",
+        focus: "Articulación",
+        action: "close",
+        duration: 0,
+        notes: "Finalizada la revisión de articulación curricular"
+      },
+      
+      // UNIDADES DIDÁCTICAS - RECORRIDO COMPLETO
+      {
+        description: "5. Unidades Didácticas del Programa",
+        focus: "Unidades Temáticas",
+        action: "highlight",
+        duration: 0,
+        notes: "Revisión de las 3 unidades del programa"
+      },
+      {
+        description: "5.1 UD 1: Conducción de Sección Morteros",
+        focus: "UD 1: Conducción de Sección Morteros",
+        action: "highlight",
+        duration: 0,
+        notes: "Primera unidad del programa - Morteros"
+      },
+      {
+        description: "→ Cerrando UD 1",
+        focus: "UD 1: Conducción de Sección Morteros", 
+        action: "close",
+        duration: 0,
+        notes: "Finalizamos revisión de UD 1"
+      },
+      {
+        description: "5.2 UD 2: Conducción de Sección Tanques",
+        focus: "UD 2: Conducción de Sección Tanques",
+        action: "highlight",
+        duration: 0,
+        notes: "Segunda unidad del programa - Tanques"
+      },
+      {
+        description: "→ Cerrando UD 2",
+        focus: "UD 2: Conducción de Sección Tanques",
+        action: "close", 
+        duration: 0,
+        notes: "Finalizamos revisión de UD 2"
+      },
+      {
+        description: "5.3 UD 3: Conducción de Sección Exploración - LA UNIDAD QUE VOY A DICTAR",
         focus: "UD 3: Conducción de Sección Exploración",
         action: "highlight",
         duration: 0,
@@ -1297,30 +1346,59 @@
         notes: "Formativa, sumativa, desempeño en rol"
       },
       {
-        description: "4.9 Bibliografía obligatoria",
+        description: "5.3.9 Bibliografía obligatoria",
         focus: "Bibliografía obligatoria",
         action: "highlight",
         duration: 0,
         notes: "Reglamentos y manuales de referencia"
       },
-      
-      // OTRAS UNIDADES (contexto)
       {
-        description: "6. Contexto: UD 1 - Principios generales",
-        focus: "UD 1",
+        description: "→ Cerrando UD 3: Conducción de Sección Exploración",
+        focus: "UD 3: Conducción de Sección Exploración",
+        action: "close",
+        duration: 0,
+        notes: "Finalizamos la revisión detallada de mi unidad didáctica"
+      },
+      {
+        description: "→ Cerrando sección: Unidades Temáticas",
+        focus: "Unidades Temáticas",
+        action: "close",
+        duration: 0,
+        notes: "Completamos la revisión de todas las unidades"
+      },
+      
+      // METODOLOGÍA Y EVALUACIÓN GENERAL
+      {
+        description: "6. Metodología de Enseñanza General",
+        focus: "Metodología de Enseñanza",
         action: "highlight",
         duration: 0,
-        notes: "Marco general que antecede a mi unidad"
+        notes: "Enfoques pedagógicos del programa completo"
       },
       {
-        description: "7. Contexto: UD 2 - Vehículos de combate",
-        focus: "UD 2",
-        action: "highlight", 
+        description: "→ Cerrando: Metodología de Enseñanza",
+        focus: "Metodología de Enseñanza",
+        action: "close",
         duration: 0,
-        notes: "Contenidos técnicos complementarios"
+        notes: "Finalizamos revisión de metodología general"
       },
       
-      // INFRAESTRUCTURA
+      {
+        description: "7. Sistema de Evaluación General",
+        focus: "Evaluación",
+        action: "highlight",
+        duration: 0,
+        notes: "Criterios y modalidades de evaluación del programa"
+      },
+      {
+        description: "→ Cerrando: Sistema de Evaluación",
+        focus: "Evaluación",
+        action: "close",
+        duration: 0,
+        notes: "Completamos revisión del sistema de evaluación"
+      },
+      
+      // INFRAESTRUCTURA Y RECURSOS
       {
         description: "8. Recursos e infraestructura",
         focus: "Infraestructura",
@@ -1411,6 +1489,8 @@
       // Ejecutar acción (ahora SÍ navega automáticamente)
       if(step.action === "highlight" && step.focus) {
         navigateAndHighlight(step.focus);
+      } else if(step.action === "close" && step.focus) {
+        closeCurrentSection(step.focus);
       } else if(step.action === "overview") {
         // Volver al inicio con animación suave
         root = mainRoot;
